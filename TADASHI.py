@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 import speech_recognition as sr
-import datetime
+import datetime, time
 import os, sys
+import webbrowser
 
 r = sr.Recognizer()
    
@@ -27,7 +28,6 @@ def voice_Recognizer():
     return recognize_words
 
 def speak(message):
-   
    if sys.platform == 'darwin':
       tts_engine = 'say'
       return os.system(tts_engine + ' ' + message)
@@ -47,11 +47,44 @@ def greeting():
         speak("Good Evening!")  
     speak("Hello I'm Tadashi. Nice to meet you, how can I help you?")       
 
+def date():
+    currentdate = datetime.datetime.now()
+    result = currentdate.strftime("%d %b %Y %A")
+    print(result)
+    speak(result)
+    
+def currenttime():
+    result = time.strftime("%I:%M:%S %A")
+    print(result)
+    speak(result)
+
+def googleSearch(recognize_words):
+    cleanword = recognize_words.replace("ask google", "")
+    webbrowser.open('https://www.google.com/search?q={}'.format(cleanword))
+    result = 'Opening your query in google search engine sir'
+    print(result)
+    speak(result)
+
+def location(recognize_words):
+        data = recognize_words.split(" ")
+        location = ""
+        location = location.split(" ")
+        for i in range(2, len(data)):
+            location.append(data[i])
+        place = "  ".join(location)
+        result = "Hold on sir, I will show you."
+        print(result)
+        speak(result)
+        webbrowser.open("https://www.google.nl/maps/place/" + place)
+
 if __name__ == "__main__":
     greeting()
     while True:
         recognize_words = voice_Recognizer()
-        if 'hello' in recognize_words:
+        if "who are you" in recognize_words:
+            print("I'm your Tadashi a simple virtual assistant.")
+            speak("I'm your Tadashi a simple virtual assistant.")
+        elif 'hello' in recognize_words:
             print("hello sir, how are you?")
             speak("hello sir, how are you?")
         elif "how are you" in recognize_words:
@@ -82,14 +115,12 @@ if __name__ == "__main__":
             print("See you later, bye")
             speak("See you later, bye")
             quit()
-        #elif "" in recognize_words:
-        #    print()
-        #    speak()
-        #elif "" in recognize_words:
-        #    print()
-        #    speak()
-        #elif "" in recognize_words:
-        #    print()
-        #    speak()
-        
+        elif "what is date" in recognize_words:
+            date()
+        elif "what is time" in recognize_words:
+            currenttime()
+        elif "ask google" in recognize_words:
+            googleSearch(recognize_words)
+        elif "where is" in recognize_words:
+            location(recognize_words)        
     
