@@ -3,6 +3,9 @@ import speech_recognition as sr
 import datetime, time
 import os, sys
 import webbrowser
+import pyttsx3
+import re
+import requests
 
 r = sr.Recognizer()
    
@@ -17,7 +20,7 @@ def voice_Recognizer():
             print("Listening...")  
             audio = r.listen(source) 
         recognize_words = r.recognize_google(audio).lower().replace("'", "")
-        print("Tadashi thinks you said '" + recognize_words + "'")
+        print("Baymax thinks you said '" + recognize_words + "'")
     except sr.UnknownValueError:
         listen = voice_Recognizer()
         return listen
@@ -28,14 +31,21 @@ def voice_Recognizer():
     return recognize_words
 
 def speak(message):
-   if sys.platform == 'darwin':
-      tts_engine = 'say'
-      return os.system(tts_engine + ' ' + message)
-   elif sys.platform == 'Linux' or sys.platform == 'linux' or sys.platform == 'Ubuntu':
-      #espeak
-      tts_engine = 'espeak'
-      print(tts_engine + ' "' + message + '"')
-      return os.system(tts_engine + ' "' + message + '"')
+    if sys.platform == 'darwin':
+        tts_engine = 'say'
+        return os.system(tts_engine + ' ' + message)
+    elif sys.platform == 'win32':
+        tts_engine = pyttsx3.init('sapi5')
+        voices = tts_engine.getProperty('voices')
+        # print(voices[1].id)
+        tts_engine.setProperty('voice', voices[1].id)
+        tts_engine.say(message)
+        engine.runAndWait()
+    elif sys.platform == 'Linux' or sys.platform == 'linux' or sys.platform == 'Ubuntu':
+        #espeak
+        tts_engine = 'espeak'
+        print("Baymax: " + ' ' + message + '')
+        return os.system(tts_engine + ' "' + message + '"')
 
 def greeting():
     hour = int(datetime.datetime.now().hour)
@@ -45,7 +55,7 @@ def greeting():
         speak("Good Afternoon!")   
     else:
         speak("Good Evening!")  
-    speak("Hello I'm Tadashi. Nice to meet you, how can I help you?")       
+    speak("Hello I'm Baymax. Nice to meet you, how can I help you?")       
 
 def date():
     currentdate = datetime.datetime.now()
@@ -77,13 +87,48 @@ def location(recognize_words):
         speak(result)
         webbrowser.open("https://www.google.nl/maps/place/" + place)
 
+def openWebsite(recognize_words):
+    reg_ex = re.search('open (.+)', recognize_words)
+    if reg_ex:
+        domain = reg_ex.group(1)
+        url = "https://www." + domain + ".com"
+        webbrowser.open(url)
+        speak("done...")
+    else:
+        speak("website not exist")
+
+def newsReport():
+    apiKey = '49e391e7066c4158937096fb5e55fb5d'
+    url = f"https://newsapi.org/v2/top-headlines?country=in&apiKey={apiKey}"
+    r = requests.get(url)
+    data = r.json()
+    data = data["articles"]
+    flag = True
+    count = 0
+    for items in data:
+        count += 1
+        if count > 10:
+            break
+        print(items["title"])
+        to_speak = items["title"].split(" - ")[0]
+        if flag:
+            print("Today's top ten Headline are : ")
+            speak("Today's top ten Headline are : ")
+            flag = False
+        else:
+            print("Next news : ")
+            speak("Next news : ")
+        print(to_speak)
+        speak(to_speak)
+
 if __name__ == "__main__":
+    time.sleep(2)
     greeting()
     while True:
         recognize_words = voice_Recognizer()
         if "who are you" in recognize_words:
-            print("I'm your Tadashi a simple virtual assistant.")
-            speak("I'm your Tadashi a simple virtual assistant.")
+            print("I'm your Baymax a simple virtual assistant.")
+            speak("I'm your Baymax a simple virtual assistant.")
         elif 'hello' in recognize_words:
             print("hello sir, how are you?")
             speak("hello sir, how are you?")
@@ -122,5 +167,8 @@ if __name__ == "__main__":
         elif "ask google" in recognize_words:
             googleSearch(recognize_words)
         elif "where is" in recognize_words:
-            location(recognize_words)        
-    
+            location(recognize_words)   
+        elif "open" in recognize_words:
+            openWebsite(recognize_words)
+        elif "what is the today headlines" in recognize_words:
+            newsReport()
