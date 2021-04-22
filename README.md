@@ -1,4 +1,4 @@
-# Baymax AI
+# Baymax AI BETA!
 
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pyowm.svg)](https://img.shields.io/pypi/pyversions/pyowm.svg)
 [![requests_doc](https://readthedocs.org/projects/requests/badge/?version=latest)](https://requests.readthedocs.io/en/master/)
