@@ -120,6 +120,15 @@ def newsReport():
             speak("Next news : ")
         print(to_speak)
         speak(to_speak)
+         
+ #jokes function
+         
+ def jokes(recognize_words):
+     res = requests.get('https://icanhazdadjoke.com/',headers={"Accept":"application/json"})
+     if res.status_code == requests.codes.ok:
+        jarvisResponse(str(res.json()['joke']))
+        else:
+            jarvisResponse('oops!I ran out of jokes)
 
 if __name__ == "__main__":
     time.sleep(2)
@@ -132,6 +141,12 @@ if __name__ == "__main__":
         elif 'hello' in recognize_words:
             print("hello sir, how are you?")
             speak("hello sir, how are you?")
+        elif "good morning" in recognize_words:
+             print("good morning sir, Have a nice day!")
+             speak("good morning sir, Have a nice day!")
+        elif "good night" in recognize_words:
+             print("good night sir, Sweet dreams")
+             speak("good night sir, Sweet dreams")
         elif "how are you" in recognize_words:
             print("I'm not the only one here that's having fun with you, it's all me.")
             speak("I'm not the only one here that's having fun with you, it's all me.")
@@ -172,3 +187,6 @@ if __name__ == "__main__":
             openWebsite(recognize_words)
         elif "what is the today headlines" in recognize_words:
             newsReport()
+        #jokes
+        elif "tell me joke" in reconginze_words:
+              jokes(recognize_words)
